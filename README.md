@@ -15,12 +15,13 @@ Import the middleware package that is part of the Fiber web framework
 ```
 import (
   "github.com/gofiber/fiber/v2"
-  "github.com/vladfr/fiber-server-timing"
+  "github.com/vladfr/fiber-servertiming/v2"
 )
 ```
 
 After you initiate your Fiber app, you can attach the middleware like this:
 
 ```
-fiber.Use(servertiming)
+app := fiber.New()
+app.Use(fiberservertiming.New())
 ```

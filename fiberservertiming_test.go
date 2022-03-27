@@ -28,6 +28,27 @@ func Test_Simple(t *testing.T) {
 	utils.AssertEqual(t, "latency;dur=", resp.Header.Get(fiber.HeaderServerTiming)[:12])
 }
 
+func Test_Multiple(t *testing.T) {
+	app := fiber.New()
+
+	app.Use(New())
+
+	app.Get("/timing", func(c *fiber.Ctx) error {
+		time.Sleep(12 * time.Millisecond)
+		return c.SendStatus(fiber.StatusOK)
+	})
+
+	r := regexp.MustCompile("^latency;dur=[0-9.,]{5,12}$")
+	for i := 1; i < 5; i++ {
+		resp, err := app.Test(httptest.NewRequest("GET", "/timing", nil))
+		utils.AssertEqual(t, nil, err)
+		headerStr := resp.Header.Get(fiber.HeaderServerTiming)
+		fmt.Println(headerStr)
+		match := r.MatchString(headerStr)
+		utils.AssertEqual(t, match, true, fmt.Sprintf("regex does not match '%s'", headerStr))
+	}
+}
+
 func Test_CustomMetric(t *testing.T) {
 	app := fiber.New()
 

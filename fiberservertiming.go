@@ -11,7 +11,6 @@ import (
 func New(config ...Config) fiber.Handler {
 	// Set default config
 	cfg := configDefault(config...)
-	timing := newHeader()
 
 	// Return new handler
 	return func(c *fiber.Ctx) error {
@@ -20,6 +19,7 @@ func New(config ...Config) fiber.Handler {
 			return c.Next()
 		}
 
+		timing := newHeader()
 		c.SetUserContext(context.WithValue(c.UserContext(), contextKey, timing))
 
 		defer addHeaders(cfg, c, timing)
