@@ -1,4 +1,6 @@
-# Server Timing
+[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/vladfr/fiber-servertiming/v2) 
+
+# Fiber Server Timing
 
 This is a Fiber middleware for the [W3C Server-Timing API](see https://w3c.github.io/server-timing/) based on [mitchellh/go-server-timing](https://github.com/mitchellh/go-server-timing)
 
