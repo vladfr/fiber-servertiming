@@ -96,3 +96,18 @@ func Test_CustomMetricRegex(t *testing.T) {
 	utils.AssertEqual(t, nil, errRe)
 	utils.AssertEqual(t, match, true, headerStr)
 }
+
+func Test_AllowHeader(t *testing.T) {
+	app := fiber.New()
+
+	app.Use(New(Config{AllowOrigins: "http://127.0.0.1:3000"}))
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusOK)
+	})
+
+	resp, err := app.Test(httptest.NewRequest("GET", "/", nil))
+	utils.AssertEqual(t, nil, err)
+
+	utils.AssertEqual(t, resp.Header.Get(ConfigDefault.AccessHeader), "http://127.0.0.1:3000")
+}
