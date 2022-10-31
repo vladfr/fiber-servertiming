@@ -24,8 +24,7 @@ func Test_Simple(t *testing.T) {
 
 	resp, err := app.Test(httptest.NewRequest("GET", "/timing", nil))
 	utils.AssertEqual(t, nil, err)
-	fmt.Println(resp.Header.Get(fiber.HeaderServerTiming))
-	utils.AssertEqual(t, "latency;dur=", resp.Header.Get(fiber.HeaderServerTiming)[:12])
+	utils.AssertEqual(t, "route;desc=\"/timing\";dur=", resp.Header.Get(fiber.HeaderServerTiming)[:25])
 }
 
 func Test_Multiple(t *testing.T) {
@@ -38,12 +37,11 @@ func Test_Multiple(t *testing.T) {
 		return c.SendStatus(fiber.StatusOK)
 	})
 
-	r := regexp.MustCompile("^latency;dur=[0-9.,]{5,12}$")
+	r := regexp.MustCompile("^route;desc=\"/timing\";dur=[0-9.,]{5,12}$")
 	for i := 1; i < 5; i++ {
 		resp, err := app.Test(httptest.NewRequest("GET", "/timing", nil))
 		utils.AssertEqual(t, nil, err)
 		headerStr := resp.Header.Get(fiber.HeaderServerTiming)
-		fmt.Println(headerStr)
 		match := r.MatchString(headerStr)
 		utils.AssertEqual(t, match, true, fmt.Sprintf("regex does not match '%s'", headerStr))
 	}
@@ -71,7 +69,7 @@ func Test_CustomMetric(t *testing.T) {
 	h, errh := servertiming.ParseHeader(headerStr)
 	utils.AssertEqual(t, nil, errh)
 
-	utils.AssertEqual(t, "latency", h.Metrics[0].Name)
+	utils.AssertEqual(t, "route", h.Metrics[0].Name)
 	utils.AssertEqual(t, "backendcall", h.Metrics[1].Name)
 }
 
@@ -94,7 +92,7 @@ func Test_CustomMetricRegex(t *testing.T) {
 	utils.AssertEqual(t, nil, err)
 
 	headerStr := resp.Header.Get(fiber.HeaderServerTiming)
-	match, errRe := regexp.MatchString("latency;dur=[0-9.,]+backendcall;dur=[0-9.,]", headerStr)
+	match, errRe := regexp.MatchString("route;desc=\"/metric\";dur=[0-9.,]+,backendcall;dur=[0-9.,]", headerStr)
 	utils.AssertEqual(t, nil, errRe)
-	utils.AssertEqual(t, match, true)
+	utils.AssertEqual(t, match, true, headerStr)
 }
