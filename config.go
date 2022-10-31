@@ -26,7 +26,14 @@ type Config struct {
 	Header string
 
 	// AccessHeader is the header key to get/set access control origin for timing
+	//
+	// Optional. Default: "Timing-Allow-Origin"
 	AccessHeader string
+
+	// AllowOrigin access control origin for timing information
+	//
+	// Optional. Default: "*"
+	AllowOrigins string
 }
 
 // ConfigDefault is the default config
@@ -34,6 +41,7 @@ var ConfigDefault = Config{
 	Next:         nil,
 	Header:       fiber.HeaderServerTiming,
 	AccessHeader: fiber.HeaderTimingAllowOrigin,
+	AllowOrigins: "*",
 }
 
 // Helper function to set default values

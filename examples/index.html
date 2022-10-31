@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Server Timing example</title>
+    <link rel="stylesheet" href="https://classless.de/classless.css">
+    <style>
+        pre { background-color: #ddd; padding: 5px; border-bottom: 5px solid #aaa; }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <p>Request timing</p>
+        <pre id="nav_timing"></pre>
+        <button onclick="fetch_from_server()">Fetch</button>
+    </div>
+    <script>
+        let e = performance.getEntriesByType("navigation")
+        document.getElementById("nav_timing").innerText = JSON.stringify(e[0].serverTiming, null, 4)
+
+        function fetch_from_server() {
+            fetch("http://127.0.0.1:4000/server").then((resp) => {
+                if (resp.ok) {
+                    return resp.text()
+                }
+            }).then((text) => {
+                const head = document.createElement("p")
+                head.appendChild(document.createTextNode(text))
+
+                const para = document.createElement("pre")
+                perf = performance.getEntriesByType("resource").pop()
+                para.appendChild(document.createTextNode(JSON.stringify(perf.serverTiming, null, 4)))
+
+                document.getElementById("content").appendChild(head)
+                document.getElementById("content").appendChild(para)
+            }).catch((error) => console.log(error))
+    }
+    </script>
+</body>
+
+</html>

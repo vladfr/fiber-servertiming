@@ -23,12 +23,16 @@ func New(config ...Config) fiber.Handler {
 		c.SetUserContext(context.WithValue(c.UserContext(), contextKey, timing))
 
 		defer addHeaders(cfg, c, timing)
-		defer timing.NewMetric("latency").Start().Stop()
+
+		defer timing.NewMetric("route").
+			WithDesc(c.Path()).
+			Start().
+			Stop()
 		return c.Next()
 	}
 }
 
 func addHeaders(cfg Config, c *fiber.Ctx, h *servertiming.Header) {
-	c.Append(cfg.AccessHeader, "Test")
+	c.Append(cfg.AccessHeader, cfg.AllowOrigins)
 	c.Append(cfg.Header, h.String())
 }
